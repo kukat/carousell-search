@@ -8,8 +8,9 @@ if __name__ == "__main__":
 
     while True:
         try:
-            for i in ITEMS:
-                processing.find_stuff(i)
+            for idx, i in enumerate(ITEMS):
+                processing.find_stuff(idx, i)
+            print("END CYCLE")
         except KeyboardInterrupt:
             print ("Interrupt")
             sys.exit(1)

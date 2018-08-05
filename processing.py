@@ -24,7 +24,7 @@ Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 session = Session()
 
-def find_stuff(search_query):
+def find_stuff(index, search_query):
     my_want = CarousellSearch(search_query, results=config.RESULTS_COUNT)
     results = my_want.send_request()
 
@@ -35,23 +35,24 @@ def find_stuff(search_query):
         # print(str(count) + ") " + r)
         print("{}) {}".format(str(count), r))
         #skip results without query in listing title
-        for want in config.ITEMS:
-            if want not in (r['title']).lower() and want not in (r['description']).lower() :
-                print("Out of search. Skip!")
-                print((r['title']).lower())
-                continue
-
-
-        #check if listing is in DB already
+        want = search_query
         itemPrice = float(r['price'])
-        minPrice = config.PRICE_MINIMUM[0]
-        maxPrice = config.PRICE_MAXIMUM[0]
-        targetPrice = config.PRICE_TARGET[0]
+        minPrice = config.PRICE_MINIMUM[index]
+        maxPrice = config.PRICE_MAXIMUM[index]
+        targetPrice = config.PRICE_TARGET[index]
 
+        # print(search_query)
         # print(minPrice)
         # print(maxPrice)
         # print(targetPrice)
 
+        if want not in (r['title']).lower() and want not in (r['description']).lower():
+            print("Out of search. Skip!")
+            print((r['title']).lower())
+            continue
+
+
+        #check if listing is in DB already
         if itemPrice <= minPrice or itemPrice >= maxPrice:
             print("Price out of range. Ignore!")
             continue
