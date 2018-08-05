@@ -4,8 +4,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, DateTime, Float, Boolean
 from sqlalchemy.orm import sessionmaker
-import chatbot as robot
-from configurations import RESULTS_COUNT
+import chatbot_slack as robot
+import myconfigurations as config
 
 Base = declarative_base()
 
@@ -25,14 +25,37 @@ Session = sessionmaker(bind=engine)
 session = Session()
 
 def find_stuff(search_query):
-    my_want = CarousellSearch(search_query, results=RESULTS_COUNT)
+    my_want = CarousellSearch(search_query, results=config.RESULTS_COUNT)
     results = my_want.send_request()
 
+    count = 0
+
     for r in results:
+        count += 1
+        # print(str(count) + ") " + r)
+        print("{}) {}".format(str(count), r))
         #skip results without query in listing title
-        if want not in (r['title']).lower():
-            continue
+        for want in config.ITEMS:
+            if want not in (r['title']).lower() and want not in (r['description']).lower() :
+                print("Out of search. Skip!")
+                print((r['title']).lower())
+                continue
+
+
         #check if listing is in DB already
+        itemPrice = float(r['price'])
+        minPrice = config.PRICE_MINIMUM[0]
+        maxPrice = config.PRICE_MAXIMUM[0]
+        targetPrice = config.PRICE_TARGET[0]
+
+        # print(minPrice)
+        # print(maxPrice)
+        # print(targetPrice)
+
+        if itemPrice <= minPrice or itemPrice >= maxPrice:
+            print("Price out of range. Ignore!")
+            continue
+
         check = (session.query(CarousellListing).filter_by(listing_id=r['id']).
                     first())
         #if it is not in DB
@@ -47,7 +70,16 @@ def find_stuff(search_query):
             )
             session.add(listing)
             session.commit()
-            line_item = (r['seller']['username'], r['title'], r['price'],
-                        arrow.get(r['time_indexed']).format('DD/MM/YYYY HH:MM'))
+
+            line_item = (r['seller']['username'], "\n" + r['title'], "\n" +  r['price'],
+                         arrow.get(r['time_indexed']).format('DD/MM/YYYY HH:MM'))
+
+            # Add hightlight when target price is met
+            if (itemPrice <= targetPrice):
+                line_item = line_item + ("$$$$$$$$$$$$$$$$$$",)
+
+
             robot.post_message(', '.join(line_item))
+        else:
+            print("Item checked before!")
     return

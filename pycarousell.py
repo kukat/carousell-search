@@ -1,10 +1,12 @@
 import requests
 import json
 
+import myconfigurations as config
+
+
 class CarousellSearch(object):
     def __init__(self, query_string=None, results=30):
-        self.base_url = ("https://carousell.com/ui/iso/api-main;path=/2.5/
-                            products/;query=")
+        self.base_url = (config.url)
         self.fields = {
             "count": results,
             "sort": 'recent',

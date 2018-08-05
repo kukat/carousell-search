@@ -1,5 +1,5 @@
 from slackclient import SlackClient
-from configurations import SLACK_TOKEN, SLACK_CHANNEL
+from myconfigurations import SLACK_TOKEN, SLACK_CHANNEL
 
 slack_notifier = SlackClient(SLACK_TOKEN)
 
@@ -11,3 +11,5 @@ def post_message(msg):
         username = 'CarousellBot',
         icon_emoji=':robot_face:'
     )
+    print("Slack message POSTED successfully!")
+

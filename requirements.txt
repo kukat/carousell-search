@@ -1,4 +1,4 @@
 arrow
 sqlalchemy
 requests
-python-slackclient
+slackclient
