@@ -29,9 +29,8 @@ def find_stuff(index, search_query):
     my_want = CarousellSearch(search_query, results=config.RESULTS_COUNT)
     try:
         results = my_want.send_request()
-    except:  # catch *all* exceptions
+    except Exception as e:
         results = []
-        e = sys.exc_info()[0]
         robot.post_message("ERROR: %s" % e)
 
     count = 0
