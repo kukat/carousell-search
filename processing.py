@@ -1,3 +1,4 @@
+import sys
 from pycarousell import CarousellSearch
 import arrow
 from sqlalchemy import create_engine
@@ -26,10 +27,14 @@ session = Session()
 
 def find_stuff(index, search_query):
     my_want = CarousellSearch(search_query, results=config.RESULTS_COUNT)
-    results = my_want.send_request()
+    try:
+        results = my_want.send_request()
+    except:  # catch *all* exceptions
+        results = []
+        e = sys.exc_info()[0]
+        robot.post_message("ERROR: %s" % e)
 
     count = 0
-
     for r in results:
         count += 1
         # print(str(count) + ") " + r)
