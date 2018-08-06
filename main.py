@@ -1,7 +1,8 @@
 import processing
 import time
 from myconfigurations import ITEMS, FREQUENCY
-
+import arrow
+import slackclient as robot
 
 if __name__ == "__main__":
     starttime = time.time()
@@ -9,8 +10,11 @@ if __name__ == "__main__":
     while True:
         try:
             for idx, i in enumerate(ITEMS):
-                processing.find_stuff(idx, i)
-            print("END CYCLE")
+                try:
+                    processing.find_stuff(idx, i)
+                except Exception as e:
+                    robot.post_message("ERROR: %s" % e)
+            print("END CYCLE %s" % arrow.now().format('DD/MM/YYYY HH:MM'))
         except KeyboardInterrupt:
             print ("Interrupt")
             sys.exit(1)
