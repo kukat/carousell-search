@@ -72,7 +72,8 @@ def find_stuff(index, search_query):
             session.add(listing)
             session.commit()
 
-            line_item = (r['seller']['username'], "\n" + r['title'], "\n" +  r['price'],
+            line_item = (r['seller']['username'] + "(https://sg.carousell.com/" + r['seller']['username'] + ")",
+                         "\n" + r['title'], "\n$" + r['price'],
                          arrow.get(r['time_indexed']).format('DD/MM/YYYY HH:MM'))
 
             # Add hightlight when target price is met
