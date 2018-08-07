@@ -1,7 +1,6 @@
 import processing
 import time
 from myconfigurations import ITEMS, FREQUENCY
-import arrow
 import slackclient as robot
 
 if __name__ == "__main__":
@@ -14,7 +13,7 @@ if __name__ == "__main__":
                     processing.find_stuff(idx, i)
                 except Exception as e:
                     robot.post_message("ERROR: %s" % e)
-            print("END CYCLE %s" % arrow.get(time.time()).format('DD/MM/YYYY HH:MM'))
+            print("END CYCLE %s" % time.ctime())
         except KeyboardInterrupt:
             print ("Interrupt")
             sys.exit(1)
