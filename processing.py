@@ -38,8 +38,8 @@ def find_stuff(index, search_query):
         count += 1
         # print(str(count) + ") " + r)
         print("{}) {}".format(str(count), r))
-        #skip results without query in listing title
-        want = search_query
+        #skip results without query in listing title OR description
+        want = search_query.lower()
         itemPrice = float(r['price'])
         minPrice = config.PRICE_MINIMUM[index]
         maxPrice = config.PRICE_MAXIMUM[index]
@@ -52,7 +52,7 @@ def find_stuff(index, search_query):
 
         if want not in (r['title']).lower() and want not in (r['description']).lower():
             print("Out of search. Skip!")
-            print((r['title']).lower())
+            print((r['title']))
             continue
 
 
