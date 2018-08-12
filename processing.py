@@ -87,6 +87,7 @@ def find_stuff(index, search_query):
             if (itemPrice <= targetPrice):
                 line_item += "$$$$$$$$$$$$$$$$$$"
 
+            line_item += "\n\n"
 
         else:
             print("Item checked before!")
