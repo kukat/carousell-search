@@ -63,6 +63,8 @@ def find_stuff(index, search_query):
 
         check = (session.query(CarousellListing).filter_by(listing_id=r['id']).
                     first())
+
+        line_item = ""
         #if it is not in DB
         if check is None:
             listing = CarousellListing(
@@ -76,16 +78,18 @@ def find_stuff(index, search_query):
             session.add(listing)
             session.commit()
 
-            line_item = (r['seller']['username'] + "(https://sg.carousell.com/" + r['seller']['username'] + ")",
-                         "\n" + r['title'], "\n$" + r['price'],
-                         arrow.get(r['time_indexed']).format('DD/MM/YYYY HH:MM'))
+            line_item += r['seller']['username'] + "(https://sg.carousell.com/" + r['seller']['username'] + ")\n" + \
+                         r['title'] + \
+                         "\n$" + r['price'] + "\n" + \
+                         arrow.get(r['time_indexed']).format('DD/MM/YYYY HH:MM') + "\n"
 
-            # Add hightlight when target price is met
+            # Add highlight when target price is met
             if (itemPrice <= targetPrice):
-                line_item = line_item + ("$$$$$$$$$$$$$$$$$$",)
+                line_item += "$$$$$$$$$$$$$$$$$$"
 
 
-            robot.post_message(', '.join(line_item))
         else:
             print("Item checked before!")
+
+    robot.post_message(line_item)
     return
