@@ -34,6 +34,7 @@ def find_stuff(index, search_query):
         robot.post_message("ERROR: %s" % e)
 
     count = 0
+    line_item = ""
     for r in results:
         count += 1
         # print(str(count) + ") " + r)
@@ -64,7 +65,6 @@ def find_stuff(index, search_query):
         check = (session.query(CarousellListing).filter_by(listing_id=r['id']).
                     first())
 
-        line_item = ""
         #if it is not in DB
         if check is None:
             listing = CarousellListing(
@@ -91,5 +91,6 @@ def find_stuff(index, search_query):
         else:
             print("Item checked before!")
 
-    robot.post_message(line_item)
+    if line_item:
+        robot.post_message(line_item)
     return
