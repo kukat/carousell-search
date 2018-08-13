@@ -31,7 +31,7 @@ def find_stuff(index, search_query):
         results = my_want.send_request()
     except Exception as e:
         results = []
-        robot.post_message("ERROR: %s" % e)
+        robot.post_message("ERROR IN API REQUEST: %s" % e)
 
     count = 0
     line_item = ""
@@ -65,6 +65,13 @@ def find_stuff(index, search_query):
         check = (session.query(CarousellListing).filter_by(listing_id=r['id']).
                     first())
 
+
+        # Details of item
+        item_details = r['seller']['username'] + "(https://sg.carousell.com/" + r['seller']['username'] + ")\n" + \
+                     r['title'] + \
+                     "\n$" + r['price'] + "\n" + \
+                     arrow.get(r['time_indexed']).format('DD/MM/YYYY HH:MM') + "\n"
+
         #if it is not in DB
         if check is None:
             listing = CarousellListing(
@@ -78,19 +85,20 @@ def find_stuff(index, search_query):
             session.add(listing)
             session.commit()
 
-            line_item += r['seller']['username'] + "(https://sg.carousell.com/" + r['seller']['username'] + ")\n" + \
-                         r['title'] + \
-                         "\n$" + r['price'] + "\n" + \
-                         arrow.get(r['time_indexed']).format('DD/MM/YYYY HH:MM') + "\n"
+            line_item += item_details
 
             # Add highlight when target price is met
-            if (itemPrice <= targetPrice):
+            if itemPrice <= targetPrice:
                 line_item += "$$$$$$$$$$$$$$$$$$"
 
             line_item += "\n\n"
 
         else:
             print("Item checked before!")
+            if float(check.price) < itemPrice:
+                line_item += item_details
+                line_item += "ITEM PRICE HAS BEEN REDUCED!!!"
+                line_item += "\n\n"
 
     if line_item:
         robot.post_message(line_item)
