@@ -95,7 +95,10 @@ def find_stuff(index, search_query):
 
         else:
             print("Item checked before!")
-            if float(check.price) < itemPrice:
+            if itemPrice < float(check.price):
+                check.price = itemPrice
+                session.commit()
+
                 line_item += item_details
                 line_item += "ITEM PRICE HAS BEEN REDUCED!!!"
                 line_item += "\n\n"
