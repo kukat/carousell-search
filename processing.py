@@ -37,7 +37,6 @@ def find_stuff(index, search_query):
     line_item = ""
     for r in results:
         count += 1
-        # print(str(count) + ") " + r)
         print("{}) {}".format(str(count), r))
         #skip results without query in listing title OR description
         want = search_query.lower()
@@ -46,16 +45,10 @@ def find_stuff(index, search_query):
         maxPrice = config.PRICE_MAXIMUM[index]
         targetPrice = config.PRICE_TARGET[index]
 
-        # print(search_query)
-        # print(minPrice)
-        # print(maxPrice)
-        # print(targetPrice)
-
         if want not in (r['title']).lower() and want not in (r['description']).lower():
             print("Out of search. Skip!")
             print((r['title']))
             continue
-
 
         #check if listing is in DB already
         if itemPrice <= minPrice or itemPrice >= maxPrice:
@@ -74,6 +67,16 @@ def find_stuff(index, search_query):
 
         #if it is not in DB
         if check is None:
+            line_item += item_details
+
+            # Add highlight when target price is met
+            if itemPrice <= targetPrice:
+                line_item += "$$$$$$$$$$$$$$$$$$"
+
+            line_item += "\n\n"
+
+            postMessage(line_item)
+
             listing = CarousellListing(
                 listing_id = r['id'],
                 seller = r['seller']['username'],
@@ -85,24 +88,20 @@ def find_stuff(index, search_query):
             session.add(listing)
             session.commit()
 
-            line_item += item_details
-
-            # Add highlight when target price is met
-            if itemPrice <= targetPrice:
-                line_item += "$$$$$$$$$$$$$$$$$$"
-
-            line_item += "\n\n"
-
         else:
             print("Item checked before!")
             if itemPrice < float(check.price):
+                line_item += item_details
+                line_item += "!!!ITEM PRICE HAS BEEN REDUCED!!!"
+                line_item += "\n\n"
+
+                postMessage(line_item)
+
                 check.price = itemPrice
                 session.commit()
 
-                line_item += item_details
-                line_item += "ITEM PRICE HAS BEEN REDUCED!!!"
-                line_item += "\n\n"
-
-    if line_item:
-        robot.post_message(line_item)
     return
+
+def postMessage(msg):
+    if msg:
+        robot.post_message(msg)
