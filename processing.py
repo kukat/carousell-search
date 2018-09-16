@@ -46,15 +46,20 @@ def find_stuff(index, search_query):
         targetPrice = config.PRICE_TARGET[index]
 
         if want not in (r['title']).lower() and want not in (r['description']).lower():
-            print("Out of search. Skip!")
-            print((r['title']))
+            print("Out of search. Skip! " + (r['title']))
             continue
 
-        #check if listing is in DB already
+        # Check if item is within specified price range
         if itemPrice <= minPrice or itemPrice >= maxPrice:
             print("Price out of range. Ignore!")
             continue
 
+        # Ignore items with unwanted keywords
+        if any([ign in r['title'].lower() for ign in config.IGNORES]) or any([ign in r['description'].lower() for ign in config.IGNORES]):
+            print("Item ignored!")
+            continue
+
+        #check if listing is in DB already
         check = (session.query(CarousellListing).filter_by(listing_id=r['id']).
                     first())
 
