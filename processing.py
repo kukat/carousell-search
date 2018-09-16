@@ -90,15 +90,16 @@ def find_stuff(index, search_query):
 
         else:
             print("Item checked before!")
-            if itemPrice < float(check.price):
-                line_item += item_details
-                line_item += "!!!ITEM PRICE HAS BEEN REDUCED!!!"
-                line_item += "\n\n"
+            if check is not None:
+                if itemPrice < float(check.price):
+                    line_item += item_details
+                    line_item += "!!!ITEM PRICE HAS BEEN REDUCED!!!"
+                    line_item += "\n\n"
 
-                postMessage(line_item)
+                    postMessage(line_item)
 
-                check.price = itemPrice
-                session.commit()
+                    check.price = itemPrice
+                    session.commit()
 
     return
 
