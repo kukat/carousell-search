@@ -1,12 +1,13 @@
-import sys
-from pycarousell import CarousellSearch
 import arrow
+from sqlalchemy import Column, Integer, String, Float
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, DateTime, Float, Boolean
 from sqlalchemy.orm import sessionmaker
+
 import chatbot_slack as robot
+import helpers
 import myconfigurations as config
+from pycarousell import CarousellSearch
 
 Base = declarative_base()
 
@@ -31,7 +32,7 @@ def find_stuff(index, search_query):
         results = my_want.send_request()
     except Exception as e:
         results = []
-        robot.post_message("ERROR IN API REQUEST: %s" % e)
+        robot.post_message(helpers.multiplyEmoji(":x:", 3) + "ERROR IN API REQUEST: %s" % e)
 
     count = 0
     line_item = ""
@@ -76,7 +77,7 @@ def find_stuff(index, search_query):
 
             # Add highlight when target price is met
             if itemPrice <= targetPrice:
-                line_item += multiplyEmoji(":heavy_dollar_sign:", 8)
+                line_item += helpers.multiplyEmoji(":heavy_dollar_sign:", 8)
 
             line_item += "\n\n"
 
@@ -98,7 +99,8 @@ def find_stuff(index, search_query):
             if check is not None:
                 if itemPrice < float(check.price):
                     line_item += item_details
-                    line_item += multiplyEmoji(":exclamation:", 3) + "ITEM PRICE HAS BEEN REDUCED" + multiplyEmoji(":exclamation:", 3)
+                    line_item += helpers.multiplyEmoji(":exclamation:", 3) + "ITEM PRICE HAS BEEN REDUCED" + \
+                                 helpers.multiplyEmoji(":exclamation:", 3)
                     line_item += "\n\n"
 
                     postMessage(line_item)
@@ -111,9 +113,3 @@ def find_stuff(index, search_query):
 def postMessage(msg):
     if msg:
         robot.post_message(msg)
-
-def multiplyEmoji(emojiStr, multi):
-    temp = ""
-    for count in range(0, multi):
-        temp += emojiStr
-    return temp

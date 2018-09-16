@@ -1,3 +1,4 @@
+import helpers
 import processing
 import time
 from myconfigurations import ITEMS, FREQUENCY, FREQUENCY_SLOW, DELAY_START, DELAY_STOP
@@ -23,7 +24,7 @@ if __name__ == "__main__":
                 try:
                     processing.find_stuff(idx, i)
                 except Exception as e:
-                    robot.post_message("ERROR: %s" % e)
+                    robot.post_message(helpers.multiplyEmoji(":x:", 3) + "ERROR: %s" % e)
             print("END CYCLE %s" % time.ctime())
         except KeyboardInterrupt:
             print ("Interrupt")
