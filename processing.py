@@ -68,7 +68,7 @@ def find_stuff(index, search_query):
         # Details of item
         item_details = r['seller']['username'] + "(https://sg.carousell.com/" + r['seller']['username'] + ")\n" + \
                      r['title'] + \
-                     "\n$" + r['price'] + "\n" + \
+                     "\n:heavy_dollar_sign:" + r['price'] + "\n" + \
                      arrow.get(r['time_indexed']).format('DD/MM/YYYY HH:MM') + "\n"
 
         #if it is not in DB
@@ -100,7 +100,7 @@ def find_stuff(index, search_query):
                 if itemPrice < float(check.price):
                     line_item += item_details
                     line_item += helpers.multiplyEmoji(":exclamation:", 3) + "ITEM PRICE HAS BEEN REDUCED" + \
-                                 helpers.multiplyEmoji(":exclamation:", 3) + "\n Old price:" + '%.2f' % check.price
+                                 helpers.multiplyEmoji(":exclamation:", 3) + "\n Old price::heavy_dollar_sign:" + '%.2f' % check.price
                     line_item += "\n\n"
 
                     postMessage(line_item)
