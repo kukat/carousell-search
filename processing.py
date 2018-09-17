@@ -100,7 +100,7 @@ def find_stuff(index, search_query):
                 if itemPrice < float(check.price):
                     line_item += item_details
                     line_item += helpers.multiplyEmoji(":exclamation:", 3) + "ITEM PRICE HAS BEEN REDUCED" + \
-                                 helpers.multiplyEmoji(":exclamation:", 3) + "\n Old price:" + check.price
+                                 helpers.multiplyEmoji(":exclamation:", 3) + "\n Old price:" + '%.2f' % check.price
                     line_item += "\n\n"
 
                     postMessage(line_item)
