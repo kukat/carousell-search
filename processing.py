@@ -74,7 +74,7 @@ def find_stuff(index, search_query):
 
         #if it is not in DB
         if check is None:
-            line_item += item_details
+            line_item = item_details
 
             # Add highlight when target price is met
             if itemPrice <= targetPrice:
@@ -99,7 +99,7 @@ def find_stuff(index, search_query):
             print("Item checked before!")
             if check is not None:
                 if itemPrice < float(check.price):
-                    line_item += item_details
+                    line_item = item_details
                     line_item += helpers.multiplyEmoji(":exclamation:", 3) + "ITEM PRICE HAS BEEN REDUCED" + \
                                  helpers.multiplyEmoji(":exclamation:", 3) + "\n Old price::heavy_dollar_sign:" + '%.2f' % check.price
                     line_item += "\n\n"
