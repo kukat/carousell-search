@@ -45,6 +45,7 @@ def find_stuff(index, search_query):
         minPrice = config.PRICE_MINIMUM[index]
         maxPrice = config.PRICE_MAXIMUM[index]
         targetPrice = config.PRICE_TARGET[index]
+        productImage = r['primary_photo_url']
 
         if want not in (r['title']).lower() and want not in (r['description']).lower():
             print("Out of search. Skip! " + (r['title']))
@@ -81,7 +82,7 @@ def find_stuff(index, search_query):
 
             line_item += "\n\n"
 
-            postMessage(line_item)
+            postMessage(line_item, productImage)
 
             listing = CarousellListing(
                 listing_id = r['id'],
@@ -110,6 +111,6 @@ def find_stuff(index, search_query):
 
     return
 
-def postMessage(msg):
+def postMessage(msg, img_url=""):
     if msg:
-        robot.post_message(msg)
+        robot.post_message(msg, img_url)
