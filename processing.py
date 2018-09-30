@@ -4,7 +4,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-import chatbot_slack as robot
 import helpers
 import myconfigurations as config
 from pycarousell import CarousellSearch
@@ -82,7 +81,7 @@ def find_stuff(index, search_query):
 
             line_item += "\n\n"
 
-            postMessage(line_item, productImage)
+            helpers.postMessage(line_item, productImage)
 
             listing = CarousellListing(
                 listing_id = r['id'],
@@ -104,13 +103,9 @@ def find_stuff(index, search_query):
                                  helpers.multiplyEmoji(":exclamation:", 3) + "\n Old price::heavy_dollar_sign:" + '%.2f' % check.price
                     line_item += "\n\n"
 
-                    postMessage(line_item)
+                    helpers.postMessage(line_item)
 
                     check.price = itemPrice
                     session.commit()
 
     return
-
-def postMessage(msg, img_url=""):
-    if msg:
-        robot.post_message(msg, img_url)
