@@ -56,7 +56,7 @@ def find_stuff(index, search_query):
             continue
 
         # Ignore items with unwanted keywords
-        if any([ign in r['title'].lower() for ign in config.IGNORES]) or any([ign in r['description'].lower() for ign in config.IGNORES]):
+        if any([ign in r['title'].lower() for ign in config.IGNORES_IN_TITLE]) or any([ign in r['description'].lower() for ign in config.IGNORES]):
             print("Item ignored!")
             continue
 
