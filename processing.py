@@ -7,7 +7,7 @@ from sqlalchemy.orm import sessionmaker
 import helpers
 import myconfigurations as config
 from pycarousell import CarousellSearch
-
+import re
 Base = declarative_base()
 
 class CarousellListing(Base):
@@ -66,7 +66,8 @@ def find_stuff(index, search_query):
 
 
         # Details of item
-        item_details = r['seller']['username'] + "(https://sg.carousell.com/" + r['seller']['username'] + ")\n" + \
+        item_details = "https://sg.carousell.com/p/" + re.sub('[^A-Za-z0-9\-]+', '', r['title'].lower().replace(" ", "-")) + "-" + str(r['id']) + \
+                    r['seller']['username'] + "(https://sg.carousell.com/" + r['seller']['username'] + ")\n" + \
                      r['title'] + \
                      "\n:heavy_dollar_sign:" + r['price'] + "\n" + \
                      arrow.get(r['time_indexed']).format('DD/MM/YYYY HH:MM') + "\n"
