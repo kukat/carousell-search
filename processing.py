@@ -40,6 +40,7 @@ def find_stuff(index, search_query):
         print("{}) {}".format(str(count), r))
         #skip results without query in listing title OR description
         want = search_query.lower()
+        itemTitle = r['title']
         itemPrice = float(r['price'])
         minPrice = config.PRICE_MINIMUM[index]
         maxPrice = config.PRICE_MAXIMUM[index]
@@ -105,8 +106,15 @@ def find_stuff(index, search_query):
                     line_item += "\n\n"
 
                     helpers.postMessage(line_item)
-
                     check.price = itemPrice
-                    session.commit()
+
+                if itemTitle != check.title:
+                    line_item = item_details
+                    line_item += helpers.multiplyEmoji(":grey_exclamation:", 3) + "ITEM TITLE HAS CHANGED" + \
+                                 helpers.multiplyEmoji(":grey_exclamation:",
+                                                       3) + "\n Old title: " + check.title
+                    line_item += "\n\n"
+
+                session.commit()
 
     return
