@@ -31,7 +31,8 @@ def find_stuff(index, search_query):
         results = my_want.send_request()
     except Exception as e:
         results = []
-        robot.post_message(helpers.multiplyEmoji(":x:", 3) + "ERROR IN API REQUEST: %s" % e)
+        type, fname, lineno = helpers.getFormattedException()
+        robot.post_message(helpers.multiplyEmoji(":x:", 3) + "ERROR IN API REQUEST: {} \n{} {} {}".format(e, type, fname, lineno))
 
     count = 0
     line_item = ""
@@ -44,8 +45,10 @@ def find_stuff(index, search_query):
         itemPrice = float(r['price'])
         minPrice = config.PRICE_MINIMUM[index]
         maxPrice = config.PRICE_MAXIMUM[index]
+        sellerUserName = r['seller']['username']
         targetPrice = config.PRICE_TARGET[index]
-        productImage = r['primary_photo_url']
+        itemImage = r['primary_photo_url']
+        itemLikes = r['likes_count']
 
         if want not in (r['title']).lower() and want not in (r['description']).lower():
             print("Out of search. Skip! " + (r['title']))
@@ -67,14 +70,15 @@ def find_stuff(index, search_query):
 
 
         # Details of item
-        item_details = "https://sg.carousell.com/p/" + re.sub('[^A-Za-z0-9\-]+', '', r['title'].lower().replace(" ", "-")) + "-" + str(r['id']) + "\n" +\
-                    r['seller']['username'] + "(https://sg.carousell.com/" + r['seller']['username'] + ")\n" + \
-                     r['title'] + \
-                     "\n:heavy_dollar_sign:" + r['price'] + "\n" + \
+        item_details = "https://sg.carousell.com/p/" + re.sub('[^A-Za-z0-9\-]+', '', itemTitle.lower().replace(" ", "-")) + "-" + str(r['id']) + "\n" +\
+                    sellerUserName + "(https://sg.carousell.com/" + sellerUserName + ")\n" + \
+                     r['title'] + "\n" +\
+                     ":heavy_dollar_sign:" + str(itemPrice) + "\n" + \
+                     helpers.multiplyEmoji(":heart:", int(itemLikes)) + "\n" + \
                      arrow.get(r['time_indexed']).format('DD/MM/YYYY HH:MM') + "\n"
 
         #if it is not in DB
-        if check is None:
+        if check is not None:
             line_item = item_details
 
             # Add highlight when target price is met
@@ -83,12 +87,12 @@ def find_stuff(index, search_query):
 
             line_item += "\n\n"
 
-            helpers.postMessage(line_item, productImage)
+            helpers.postMessage(line_item, itemImage)
 
             listing = CarousellListing(
                 listing_id = r['id'],
-                seller = r['seller']['username'],
-                title = r['title'],
+                seller =sellerUserName,
+                title = itemTitle,
                 currency_symbol = r['currency_symbol'],
                 price = r['price'],
                 time = arrow.get(r['time_created']).format('DD/MM/YYYY HH:MM')

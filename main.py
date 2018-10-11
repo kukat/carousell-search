@@ -1,3 +1,5 @@
+import sys
+
 import helpers
 import processing
 import time
@@ -24,7 +26,8 @@ if __name__ == "__main__":
                 try:
                     processing.find_stuff(idx, i)
                 except Exception as e:
-                    robot.post_message(helpers.multiplyEmoji(":x:", 3) + "ERROR: %s" % e)
+                    type, fname, lineno = helpers.getFormattedException()
+                    robot.post_message(helpers.multiplyEmoji(":x:", 3) + "ERROR: {} \n{} {} {}".format(e, type, fname, lineno))
             print("END CYCLE %s" % time.ctime())
         except KeyboardInterrupt:
             print ("Interrupt")
