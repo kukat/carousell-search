@@ -27,7 +27,11 @@ if __name__ == "__main__":
                     processing.find_stuff(idx, i)
                 except Exception as e:
                     type, fname, lineno = helpers.getFormattedException()
-                    robot.post_message(helpers.multiplyEmoji(":x:", 3) + "ERROR: {} \n{} {} {}".format(e, type, fname, lineno))
+                    message = helpers.multiplyEmoji(":x:", 3) + "ERROR: {} \n{} {} {}".format(e, type,
+                                                                                                             fname,
+                                                                                                             lineno)
+                    print(message)
+                    robot.post_message(message)
             print("END CYCLE %s" % time.ctime())
         except KeyboardInterrupt:
             print ("Interrupt")

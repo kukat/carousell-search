@@ -19,6 +19,7 @@ class CarousellListing(Base):
     currency_symbol = Column(String)
     price = Column(Float)
     time = Column(String)
+    likes = Column(Integer)
 
 engine = create_engine('sqlite:///searchListings.db')
 Base.metadata.create_all(engine)
@@ -32,7 +33,9 @@ def find_stuff(index, search_query):
     except Exception as e:
         results = []
         type, fname, lineno = helpers.getFormattedException()
-        robot.post_message(helpers.multiplyEmoji(":x:", 3) + "ERROR IN API REQUEST: {} \n{} {} {}".format(e, type, fname, lineno))
+        message = helpers.multiplyEmoji(":x:", 3) + "ERROR IN API REQUEST: {} \n{} {} {}".format(e, type, fname, lineno)
+        print(message)
+        robot.post_message(message)
 
     count = 0
     line_item = ""
@@ -94,8 +97,9 @@ def find_stuff(index, search_query):
                 seller =sellerUserName,
                 title = itemTitle,
                 currency_symbol = r['currency_symbol'],
-                price = r['price'],
-                time = arrow.get(r['time_created']).format('DD/MM/YYYY HH:MM')
+                price = itemPrice,
+                time = arrow.get(r['time_created']).format('DD/MM/YYYY HH:MM'),
+                likes = itemLikes,
             )
             session.add(listing)
             session.commit()
@@ -117,6 +121,13 @@ def find_stuff(index, search_query):
                     line_item += helpers.multiplyEmoji(":grey_exclamation:", 3) + "ITEM TITLE HAS CHANGED" + \
                                  helpers.multiplyEmoji(":grey_exclamation:",
                                                        3) + "\n Old title: " + check.title
+                    line_item += "\n\n"
+
+                if itemLikes != check.likes:
+                    line_item = item_details
+                    line_item += helpers.multiplyEmoji(":heartpulse: ", 3) + "ITEM :heart: HAS CHANGED" + \
+                                 helpers.multiplyEmoji(":heartpulse: ",
+                                                       3) + "\n Old likes: " + str(itemLikes) + ":heart:"
                     line_item += "\n\n"
 
                 session.commit()
