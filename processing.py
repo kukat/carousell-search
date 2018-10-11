@@ -107,14 +107,16 @@ def find_stuff(index, search_query):
         else:
             print("Item checked before!")
             if check is not None:
+                line_item = item_details
+
+                isChanged=False
                 if itemPrice < float(check.price):
                     line_item = item_details
                     line_item += helpers.multiplyEmoji(":exclamation:", 3) + "ITEM PRICE HAS BEEN REDUCED" + \
                                  helpers.multiplyEmoji(":exclamation:", 3) + "\n Old price::heavy_dollar_sign:" + '%.2f' % check.price
                     line_item += "\n\n"
-
-                    helpers.postMessage(line_item)
                     check.price = itemPrice
+                    isChanged = True
 
                 if itemTitle != check.title:
                     line_item = item_details
@@ -122,6 +124,8 @@ def find_stuff(index, search_query):
                                  helpers.multiplyEmoji(":grey_exclamation:",
                                                        3) + "\n Old title: " + check.title
                     line_item += "\n\n"
+                    check.title = itemTitle
+                    isChanged = True
 
                 if itemLikes != check.likes:
                     line_item = item_details
@@ -129,6 +133,11 @@ def find_stuff(index, search_query):
                                  helpers.multiplyEmoji(":heartpulse: ",
                                                        3) + "\n Old likes: " + str(itemLikes) + ":heart:"
                     line_item += "\n\n"
+                    check.likes = itemLikes
+                    isChanged = True
+
+                if isChanged:
+                    helpers.postMessage(line_item)
 
                 session.commit()
 
