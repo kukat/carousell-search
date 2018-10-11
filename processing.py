@@ -127,7 +127,7 @@ def find_stuff(index, search_query):
                     check.title = itemTitle
                     isChanged = True
 
-                if itemLikes != check.likes:
+                if int(itemLikes) >= check.likes + 3:
                     line_item = item_details
                     line_item += helpers.multiplyEmoji(":heartpulse: ", 3) + "ITEM :heart: HAS CHANGED" + \
                                  helpers.multiplyEmoji(":heartpulse: ",
