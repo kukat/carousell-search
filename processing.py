@@ -78,7 +78,7 @@ def find_stuff(index, search_query):
                      arrow.get(r['time_indexed']).format('DD/MM/YYYY HH:MM') + "\n"
 
         #if it is not in DB
-        if check is not None:
+        if check is None:
             line_item = item_details
 
             # Add highlight when target price is met
