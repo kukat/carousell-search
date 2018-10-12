@@ -35,7 +35,7 @@ def find_stuff(index, search_query):
         type, fname, lineno = helpers.getFormattedException()
         message = helpers.multiplyEmoji(":x:", 3) + "ERROR IN API REQUEST: {} \n{} {} {}".format(e, type, fname, lineno)
         print(message)
-        robot.post_message(message)
+        helpers.postMessage(message)
 
     count = 0
     line_item = ""
