@@ -108,10 +108,9 @@ def find_stuff(index, search_query):
             print("Item checked before!")
             if check is not None:
                 line_item = item_details
-
                 isChanged=False
+
                 if itemPrice < float(check.price):
-                    line_item = item_details
                     line_item += helpers.multiplyEmoji(":exclamation:", 3) + "ITEM PRICE HAS BEEN REDUCED" + \
                                  helpers.multiplyEmoji(":exclamation:", 3) + "\n Old price::heavy_dollar_sign:" + '%.2f' % check.price
                     line_item += "\n\n"
@@ -119,7 +118,6 @@ def find_stuff(index, search_query):
                     isChanged = True
 
                 if itemTitle != check.title:
-                    line_item = item_details
                     line_item += helpers.multiplyEmoji(":grey_exclamation:", 3) + "ITEM TITLE HAS CHANGED" + \
                                  helpers.multiplyEmoji(":grey_exclamation:",
                                                        3) + "\n Old title: " + check.title
@@ -127,11 +125,13 @@ def find_stuff(index, search_query):
                     check.title = itemTitle
                     isChanged = True
 
-                if int(itemLikes) >= check.likes + 3:
-                    line_item = item_details
-                    line_item += helpers.multiplyEmoji(":heartpulse: ", 3) + "ITEM :heart: HAS CHANGED" + \
-                                 helpers.multiplyEmoji(":heartpulse: ",
-                                                       3) + "\n Old likes: " + str(itemLikes) + ":heart:"
+                if check.likes == None:
+                    check.likes = 0
+
+                if int(itemLikes) >= check.likes + config.LIMIT_1:
+                    line_item += helpers.multiplyEmoji(":heartpulse:", 3) + "ITEM :heart: HAS CHANGED" + \
+                                 helpers.multiplyEmoji(":heartpulse:",
+                                                       3) + "\n Old : " + str(check.likes) + ":heart:"
                     line_item += "\n\n"
                     check.likes = itemLikes
                     isChanged = True
