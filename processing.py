@@ -8,7 +8,9 @@ import helpers
 import myconfigurations as config
 from pycarousell import CarousellSearch
 import re
+
 Base = declarative_base()
+
 
 class CarousellListing(Base):
     __tablename__ = 'itemlistings'
@@ -21,10 +23,12 @@ class CarousellListing(Base):
     time = Column(String)
     likes = Column(Integer)
 
+
 engine = create_engine('sqlite:///searchListings.db')
 Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 session = Session()
+
 
 def find_stuff(index, search_query):
     try:
@@ -36,7 +40,7 @@ def find_stuff(index, search_query):
         for r in results:
             count += 1
             print("{}) {}".format(str(count), r))
-            #skip results without query in listing title OR description
+            # skip results without query in listing title OR description
             want = search_query.lower()
             itemTitle = r['title']
             itemPrice = float(r['price'])
@@ -57,14 +61,14 @@ def find_stuff(index, search_query):
                 continue
 
             # Ignore items with unwanted keywords
-            if any([ign in r['title'].lower() for ign in config.IGNORES_IN_TITLE]) or any([ign in r['description'].lower() for ign in config.IGNORES]):
+            if any([ign in r['title'].lower() for ign in config.IGNORES_IN_TITLE]) or any(
+                    [ign in r['description'].lower() for ign in config.IGNORES]):
                 print("Item ignored!")
                 continue
 
-            #check if listing is in DB already
+            # check if listing is in DB already
             check = (session.query(CarousellListing).filter_by(listing_id=r['id']).
-                        first())
-
+                     first())
 
             # Details of item
             item_details = "https://sg.carousell.com/p/" + re.sub('[^A-Za-z0-9\-]+', '', itemTitle.lower().replace(" ", "-")) + "-" + str(r['id']) + "\n" +\
@@ -74,7 +78,7 @@ def find_stuff(index, search_query):
                          helpers.multiplyEmoji(":heart:", int(itemLikes)) + "\n" + \
                          arrow.get(r['time_indexed']).format('DD/MM/YYYY HH:MM') + "\n"
 
-            #if it is not in DB
+            # if it is not in DB
             if check is None:
                 line_item = item_details
 
@@ -87,13 +91,13 @@ def find_stuff(index, search_query):
                 helpers.postMessage(line_item, itemImage)
 
                 listing = CarousellListing(
-                    listing_id = r['id'],
-                    seller =sellerUserName,
-                    title = itemTitle,
-                    currency_symbol = r['currency_symbol'],
-                    price = itemPrice,
-                    time = arrow.get(r['time_created']).format('DD/MM/YYYY HH:MM'),
-                    likes = itemLikes,
+                    listing_id=r['id'],
+                    seller=sellerUserName,
+                    title=itemTitle,
+                    currency_symbol=r['currency_symbol'],
+                    price=itemPrice,
+                    time=arrow.get(r['time_created']).format('DD/MM/YYYY HH:MM'),
+                    likes=itemLikes,
                 )
                 session.add(listing)
                 session.commit()
@@ -102,7 +106,7 @@ def find_stuff(index, search_query):
                 print("Item checked before!")
                 if check is not None:
                     line_item = item_details
-                    isChanged=False
+                    isChanged = False
 
                     if itemPrice < float(check.price):
                         line_item += helpers.multiplyEmoji(":exclamation:", 3) + "ITEM PRICE HAS BEEN REDUCED" + \

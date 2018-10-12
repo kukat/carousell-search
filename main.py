@@ -6,10 +6,12 @@ import time
 from myconfigurations import ITEMS, FREQUENCY, FREQUENCY_SLOW, DELAY_START, DELAY_STOP
 import schedule
 
+
 def job_delay_alter(inFrequency):
     global frequency
     frequency = inFrequency
     helpers.postMessage("JOB UPDATED")
+
 
 if __name__ == "__main__":
     starttime = time.time()
@@ -30,6 +32,6 @@ if __name__ == "__main__":
                     helpers.postMessage(message)
             print("END CYCLE %s" % time.ctime())
         except KeyboardInterrupt:
-            print ("Interrupt")
+            print("Interrupt")
             sys.exit(1)
         time.sleep(frequency - ((time.time() - starttime) % frequency))
