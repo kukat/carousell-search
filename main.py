@@ -4,14 +4,12 @@ import helpers
 import processing
 import time
 from myconfigurations import ITEMS, FREQUENCY, FREQUENCY_SLOW, DELAY_START, DELAY_STOP
-import slackclient as robot
 import schedule
-import chatbot_slack as robot
 
 def job_delay_alter(inFrequency):
     global frequency
     frequency = inFrequency
-    robot.post_message("JOB UPDATED")
+    helpers.postMessage("JOB UPDATED")
 
 if __name__ == "__main__":
     starttime = time.time()
@@ -27,11 +25,9 @@ if __name__ == "__main__":
                     processing.find_stuff(idx, i)
                 except Exception as e:
                     type, fname, lineno = helpers.getFormattedException()
-                    message = helpers.multiplyEmoji(":x:", 3) + "ERROR: {} \n{} {} {}".format(e, type,
-                                                                                                             fname,
-                                                                                                             lineno)
+                    message = helpers.multiplyEmoji(":x:", 3) + "ERROR: {} \n{} {} {}".format(e, type, fname, lineno)
                     print(message)
-                    robot.post_message(message)
+                    helpers.postMessage(message)
             print("END CYCLE %s" % time.ctime())
         except KeyboardInterrupt:
             print ("Interrupt")
