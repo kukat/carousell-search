@@ -32,7 +32,7 @@ session = Session()
 
 def find_stuff(index, search_query):
     try:
-        my_want = CarousellSearch(search_query, results=config.RESULTS_COUNT)
+        my_want = CarousellSearch(search_query[0], results=config.RESULTS_COUNT)
         results = my_want.send_request()
 
         count = 0
@@ -41,13 +41,13 @@ def find_stuff(index, search_query):
             count += 1
             print("{}) {}".format(str(count), r))
             # skip results without query in listing title OR description
-            want = search_query.lower()
+            want = search_query[0].lower()
             itemTitle = r['title']
             itemPrice = float(r['price'])
-            minPrice = config.PRICE_MINIMUM[index]
-            maxPrice = config.PRICE_MAXIMUM[index]
+            minPrice = search_query[1]
+            maxPrice = search_query[2]
             sellerUserName = r['seller']['username']
-            targetPrice = config.PRICE_TARGET[index]
+            targetPrice = search_query[3]
             itemImage = r['primary_photo_url']
             itemLikes = r['likes_count']
 
