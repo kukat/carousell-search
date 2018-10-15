@@ -52,9 +52,6 @@ def find_stuff(index, search_query):
             itemLikes = r['likes_count']
             itemLink = "https://sg.carousell.com/p/" + re.sub('[^A-Za-z0-9\-]+', '', itemTitle.lower().replace(" ", "-")) + "-" + str(r['id'])
 
-            if itemLink in str(read_slack.getMessages()):
-                print("Posted earlier. Skip!")
-                continue
 
             if want not in (itemTitle).lower() and want not in (r['description']).lower():
                 print("Out of search. Skip! " + (itemTitle))
@@ -93,7 +90,8 @@ def find_stuff(index, search_query):
 
                 line_item += "\n\n"
 
-                helpers.postMessage(line_item, itemImage)
+                if not (itemLink in str(read_slack.getMessages())):
+                    helpers.postMessage(line_item, itemImage)
 
                 listing = CarousellListing(
                     listing_id=r['id'],
