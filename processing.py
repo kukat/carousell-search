@@ -8,7 +8,7 @@ import helpers
 import myconfigurations as config
 from pycarousell import CarousellSearch
 import re
-
+import read_slack
 Base = declarative_base()
 
 
@@ -50,9 +50,14 @@ def find_stuff(index, search_query):
             targetPrice = search_query[3]
             itemImage = r['primary_photo_url']
             itemLikes = r['likes_count']
+            itemLink = "https://sg.carousell.com/p/" + re.sub('[^A-Za-z0-9\-]+', '', itemTitle.lower().replace(" ", "-")) + "-" + str(r['id'])
 
-            if want not in (r['title']).lower() and want not in (r['description']).lower():
-                print("Out of search. Skip! " + (r['title']))
+            if itemLink in str(read_slack.getMessages()):
+                print("Posted earlier. Skip!")
+                continue
+
+            if want not in (itemTitle).lower() and want not in (r['description']).lower():
+                print("Out of search. Skip! " + (itemTitle))
                 continue
 
             # Check if item is within specified price range
@@ -61,7 +66,7 @@ def find_stuff(index, search_query):
                 continue
 
             # Ignore items with unwanted keywords
-            if any([ign in r['title'].lower() for ign in config.IGNORES_IN_TITLE]) or any(
+            if any([ign in itemTitle.lower() for ign in config.IGNORES_IN_TITLE]) or any(
                     [ign in r['description'].lower() for ign in config.IGNORES]):
                 print("Item ignored!")
                 continue
@@ -71,9 +76,9 @@ def find_stuff(index, search_query):
                      first())
 
             # Details of item
-            item_details = "https://sg.carousell.com/p/" + re.sub('[^A-Za-z0-9\-]+', '', itemTitle.lower().replace(" ", "-")) + "-" + str(r['id']) + "\n" +\
+            item_details = itemLink + "\n" +\
                         sellerUserName + "(https://sg.carousell.com/" + sellerUserName + ")\n" + \
-                         r['title'] + "\n" +\
+                         itemTitle + "\n" +\
                          ":heavy_dollar_sign:" + str(itemPrice) + "\n" + \
                          helpers.multiplyEmoji(":heart:", int(itemLikes)) + "\n" + \
                          arrow.get(r['time_indexed']).format('DD/MM/YYYY HH:MM') + "\n"

@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 
 from slackclient import SlackClient
 
@@ -8,12 +8,12 @@ import myconfigurations as config
 try:
     slack_token = config.SLACK_TOKEN
     channel_name = config.SLACK_CHANNEL.replace("#", "")
-    date_from = '2018-10-10 00:00:00'
-    date_to = '2018-10-13 23:59:59'
+    date_from = (datetime.datetime.today() - datetime.timedelta(5)).strftime('%Y-%m-%d') + " 00:00:00"
+    date_to = (datetime.datetime.today()).strftime('%Y-%m-%d') + " 23:59:59"
     date_parsed_format = "%Y-%m-%d %H:%M:%S"
 
-    oldest = (datetime.strptime(date_from, date_parsed_format) - datetime(1970, 1, 1)).total_seconds()
-    latest = (datetime.strptime(date_to, date_parsed_format) - datetime(1970, 1, 1)).total_seconds()
+    oldest = (datetime.datetime.strptime(date_from, date_parsed_format) - datetime.datetime(1970, 1, 1)).total_seconds()
+    latest = (datetime.datetime.strptime(date_to, date_parsed_format) - datetime.datetime(1970, 1, 1)).total_seconds()
 
     sc = SlackClient(slack_token)
     sc2 = SlackClient(config.SLACK_TOKEN_PRI)
@@ -32,7 +32,7 @@ try:
     if channel_id == None:
         raise Exception("Cannot find channel " + channel_name)
 
-    history = sc2.api_call("channels.history", channel=channel_id, oldest=oldest, latest=latest, count=50)
+    history = sc2.api_call("channels.history", channel=channel_id, oldest=oldest, latest=latest, count=1000)
     posts_by_user = {}
 
     try:
