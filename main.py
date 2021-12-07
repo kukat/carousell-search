@@ -30,7 +30,7 @@ if __name__ == "__main__":
                     message = helpers.multiplyEmoji(":x:", 3) + "ERROR: {} \n{} {} {}".format(e, type, fname, lineno)
                     print(message)
                     helpers.postMessage(message)
-            print("END CYCLE %s" % time.ctime())
+            print("==========================END CYCLE %s==========================" % time.ctime())
         except KeyboardInterrupt:
             print("Interrupt")
             sys.exit(1)

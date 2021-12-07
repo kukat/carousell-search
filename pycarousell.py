@@ -6,22 +6,37 @@ import myconfigurations as config
 
 class CarousellSearch(object):
     def __init__(self, query_string=None, results=30):
-        self.base_url = (config.url)
+        self.base_url = ("https://www.carousell.sg/api-service/filter/cf/4.0/search/")
         self.fields = {
-            "count": results,
-            "sort": 'recent',
-            "query": query_string,
-            "lattitude": '',
-            "longitdue": '',
-            "lte": '',
-            "unit": '',
-            "country_id": '1880251',
-            "country_code": "SG"
+            "bestMatchEnabled": True,
+            "canChangeKeyword": False,
+            "ccid": "5729",
+            "count": 20,
+            "countryCode": "SG",
+            "countryId": "1880251",
+            "filters": [
+                {
+                "rangedFloat": { "start": { "value": "600" }, "end": { "value": "800" } },
+                "fieldName": "price"
+                }
+            ],
+            "includeSuggestions": False,
+            "locale": "en",
+            "prefill": {
+                "prefill_sort_by": "3",
+                "prefill_price_start": "600",
+                "prefill_price_end": "800"
+            },
+            "query": "xbox series x",
+            "sortParam": { "fieldName": "3" }
         }
-        query_fields = json.dumps(self.fields)
-        self.query_url = self.base_url + query_fields
+
+        self.query_fields = json.dumps(self.fields)
+        self.query_url = self.base_url
 
     def send_request(self):
-        r = requests.get(self.query_url)
+        # print(self.query_url)
+        # print(self.query_fields)
+        r = requests.post(self.query_url, json=self.fields)
         data = json.loads(r.text)
-        return data['products']
+        return data['data']['results']

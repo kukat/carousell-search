@@ -8,7 +8,6 @@ import helpers
 import myconfigurations as config
 from pycarousell import CarousellSearch
 import re
-import read_slack
 Base = declarative_base()
 
 
@@ -37,40 +36,43 @@ def find_stuff(index, search_query):
 
         count = 0
         line_item = ""
-        for r in results:
+        for item in results:
+            r = item['listingCard']
             count += 1
             print("{}) {}".format(str(count), r))
             # skip results without query in listing title OR description
             want = search_query[0].lower()
             itemTitle = r['title']
-            itemPrice = float(r['price'])
+            itemPrice = float(r['price'].lstrip("S$"))
             minPrice = search_query[1]
             maxPrice = search_query[2]
             sellerUserName = r['seller']['username']
             targetPrice = search_query[3]
-            itemImage = r['primary_photo_url']
-            itemLikes = r['likes_count']
+            itemImage = r['photoUrls'][0]
+            itemLikes = r['likesCount']
             itemLink = "https://sg.carousell.com/p/" + re.sub('[^A-Za-z0-9\-]+', '', itemTitle.lower().replace(" ", "-")) + "-" + str(r['id'])
 
 
-            if want not in (itemTitle).lower() and want not in (r['description']).lower():
-                print("Out of search. Skip! " + (itemTitle))
-                continue
+            # if want not in (itemTitle).lower() and want not in (r['description']).lower():
+            #     print("Out of search. Skip! " + (itemTitle))
+            #     continue
 
-            # Check if item is within specified price range
-            if itemPrice <= minPrice or itemPrice >= maxPrice:
-                print("Price out of range. Ignore!")
-                continue
+            # # Check if item is within specified price range
+            # if itemPrice <= minPrice or itemPrice >= maxPrice:
+            #     print("Price out of range. Ignore!")
+            #     continue
 
-            # Ignore items with unwanted keywords
-            if any([ign in itemTitle.lower() for ign in config.IGNORES_IN_TITLE]) or any(
-                    [ign in r['description'].lower() for ign in config.IGNORES]):
-                print("Item ignored!")
-                continue
+            # # Ignore items with unwanted keywords
+            # if any([ign in itemTitle.lower() for ign in config.IGNORES_IN_TITLE]) or any(
+            #         [ign in r['description'].lower() for ign in config.IGNORES]):
+            #     print("Item ignored!")
+            #     continue
 
             # check if listing is in DB already
             check = (session.query(CarousellListing).filter_by(listing_id=r['id']).
                      first())
+
+            postedTime = arrow.get(r['aboveFold'][0]['timestampContent']['seconds']['low']).format('DD/MM/YYYY HH:MM')
 
             # Details of item
             item_details = itemLink + "\n" +\
@@ -78,28 +80,27 @@ def find_stuff(index, search_query):
                          itemTitle + "\n" +\
                          ":heavy_dollar_sign:" + str(itemPrice) + "\n" + \
                          helpers.multiplyEmoji(":heart:", int(itemLikes)) + "\n" + \
-                         arrow.get(r['time_indexed']).format('DD/MM/YYYY HH:MM') + "\n"
+                         postedTime + "\n"
 
             # if it is not in DB
             if check is None:
                 line_item = item_details
 
                 # Add highlight when target price is met
-                if itemPrice <= targetPrice:
-                    line_item += helpers.multiplyEmoji(":heavy_dollar_sign:", 8)
+                # if itemPrice <= targetPrice:
+                #     line_item += helpers.multiplyEmoji(":heavy_dollar_sign:", 8)
 
                 line_item += "\n\n"
 
-                if not (itemLink in str(read_slack.getMessages())):
-                    helpers.postMessage(line_item, itemImage)
+                helpers.postMessage(line_item, itemImage)
 
                 listing = CarousellListing(
                     listing_id=r['id'],
                     seller=sellerUserName,
                     title=itemTitle,
-                    currency_symbol=r['currency_symbol'],
+                    currency_symbol="S$",
                     price=itemPrice,
-                    time=arrow.get(r['time_created']).format('DD/MM/YYYY HH:MM'),
+                    time=postedTime,
                     likes=itemLikes,
                 )
                 session.add(listing)
